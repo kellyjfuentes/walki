@@ -1,6 +1,6 @@
 import { mockDestinations } from './data.js';
 
-const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY_HERE'; // IMPORTANTE: Reemplazar con tu clave real
+const GOOGLE_MAPS_API_KEY = 'AIzaSyB7cwt_MRRkXbCmN7oHFEhte6FsSOg3ut8'; // IMPORTANTE: Reemplazar con tu clave real
 
 function loadGoogleMapsScript(callback) {
   if (typeof google !== 'undefined' && google.maps) {
