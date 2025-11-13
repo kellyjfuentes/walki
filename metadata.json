@@ -1,0 +1,7 @@
+{
+  "name": "WALKi - Tu compañero de montaña",
+  "description": "A web application for hikers to discover new destinations, track their activity, and engage with a community. This app demonstrates UI/UX concepts including an interactive map and user profiles.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
