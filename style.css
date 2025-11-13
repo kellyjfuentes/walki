@@ -18,6 +18,7 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -25,10 +26,40 @@ body {
 .animate-fadeIn {
   animation: fadeIn 1s ease-in-out;
 }
+
 @keyframes slideUp {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
 }
 .animate-slideUp {
   animation: slideUp 0.5s ease-out forwards;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.animate-slideDown {
+  animation: slideDown 0.5s ease-out forwards;
+}
+
+/* PWA: Ocultar la barra de scroll cuando está en modo standalone */
+@media all and (display-mode: standalone) {
+  body {
+    overflow: hidden;
+  }
+  
+  #app-container {
+    height: 100vh;
+    overflow-y: auto;
+  }
+}
+
+/* Mejoras para PWA en iOS */
+@supports (-webkit-touch-callout: none) {
+  body {
+    /* Previene el bounce en iOS */
+    position: fixed;
+    width: 100%;
+  }
 }

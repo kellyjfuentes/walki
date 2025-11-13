@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#15803d">
@@ -14,13 +14,38 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="WALKi">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/icon-192.png">
     
-    <title>WALKi</title>
+    <title>WALKi - Tu compañero de montaña</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="bg-gray-200">
+
+    <!-- Banner de instalación (se muestra solo si la PWA no está instalada) -->
+    <div id="install-banner" class="hidden fixed top-0 left-0 right-0 bg-green-700 text-white p-4 shadow-lg z-50 animate-slideDown">
+        <div class="max-w-md mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z"/>
+                </svg>
+                <div>
+                    <p class="font-bold text-sm">¡Instala WALKi!</p>
+                    <p class="text-xs opacity-90">Úsala sin conexión</p>
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button id="install-button" class="bg-white text-green-700 px-4 py-2 rounded-full text-sm font-semibold hover:bg-green-50">
+                    Instalar
+                </button>
+                <button id="dismiss-button" class="text-white hover:text-green-100">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <div id="root">
         <!-- El contenido de la aplicación se renderiza aquí mediante JavaScript -->
@@ -28,18 +53,67 @@
     
     <script type="module" src="js/main.js"></script>
     
-    <!-- Registro del Service Worker -->
+    <!-- PWA Installation & Service Worker -->
     <script>
+        // Registro del Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/service-worker.js')
                     .then((registration) => {
-                        console.log('Service Worker registrado:', registration);
+                        console.log('✅ Service Worker registrado:', registration.scope);
                     })
                     .catch((error) => {
-                        console.log('Error al registrar Service Worker:', error);
+                        console.error('❌ Error al registrar Service Worker:', error);
                     });
             });
+        }
+
+        // Manejo del prompt de instalación
+        let deferredPrompt;
+        const installBanner = document.getElementById('install-banner');
+        const installButton = document.getElementById('install-button');
+        const dismissButton = document.getElementById('dismiss-button');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Previene el mini-infobar en Chrome
+            e.preventDefault();
+            // Guarda el evento para usarlo después
+            deferredPrompt = e;
+            // Muestra el banner de instalación
+            installBanner.classList.remove('hidden');
+            
+            console.log('💡 PWA instalable detectada');
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            // Muestra el prompt de instalación
+            deferredPrompt.prompt();
+            
+            // Espera la respuesta del usuario
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`Usuario ${outcome === 'accepted' ? 'aceptó' : 'rechazó'} la instalación`);
+            
+            // Limpia el prompt
+            deferredPrompt = null;
+            installBanner.classList.add('hidden');
+        });
+
+        dismissButton.addEventListener('click', () => {
+            installBanner.classList.add('hidden');
+        });
+
+        // Detecta cuando la app es instalada
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA instalada exitosamente');
+            installBanner.classList.add('hidden');
+            deferredPrompt = null;
+        });
+
+        // Detecta si ya está instalada (standalone mode)
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('✅ Ejecutándose como PWA instalada');
         }
     </script>
 </body>

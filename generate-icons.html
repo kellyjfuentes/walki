@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Iconos WALKi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 20px;
+            display: none;
+        }
+        button {
+            background: #15803d;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background: #166534;
+        }
+        .icons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .icon-item {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        .icon-item img {
+            width: 100%;
+            height: auto;
+        }
+        .icon-item a {
+            display: block;
+            margin-top: 10px;
+            color: #15803d;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .instructions {
+            background: #f0fdf4;
+            border: 2px solid #15803d;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 Generador de Iconos WALKi</h1>
+    
+    <div class="instructions">
+        <h3>📋 Instrucciones:</h3>
+        <ol>
+            <li>Haz clic en "Generar Todos los Iconos"</li>
+            <li>Descarga cada ícono haciendo clic en los enlaces</li>
+            <li>Guarda los archivos en la raíz de tu proyecto con los nombres exactos</li>
+            <li>¡Listo! Tu PWA tendrá los iconos correctos</li>
+        </ol>
+    </div>
+
+    <button onclick="generateAllIcons()">🚀 Generar Todos los Iconos</button>
+
+    <div id="icons-container" class="icons-grid"></div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            canvas.width = size;
+            canvas.height = size;
+
+            // Fondo verde
+            ctx.fillStyle = '#15803d';
+            ctx.fillRect(0, 0, size, size);
+
+            // Texto "WALKi"
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.15}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('WA', size * 0.35, size * 0.4);
+            ctx.fillText('Ki', size * 0.65, size * 0.4);
+
+            // Dibujar una bota simplificada (ícono)
+            const scale = size / 512;
+            ctx.save();
+            ctx.translate(size * 0.5, size * 0.65);
+            ctx.scale(scale, scale);
+            
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            // Forma simplificada de bota
+            ctx.moveTo(-60, -30);
+            ctx.lineTo(-60, 40);
+            ctx.lineTo(60, 40);
+            ctx.lineTo(60, -10);
+            ctx.lineTo(20, -30);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Suela
+            ctx.fillRect(-60, 40, 120, 15);
+            
+            ctx.restore();
+        }
+
+        function generateAllIcons() {
+            const container = document.getElementById('icons-container');
+            container.innerHTML = '';
+
+            sizes.forEach(size => {
+                // Crear canvas
+                const canvas = document.createElement('canvas');
+                drawIcon(canvas, size);
+
+                // Convertir a imagen
+                const dataUrl = canvas.toDataURL('image/png');
+
+                // Crear elemento para mostrar
+                const iconDiv = document.createElement('div');
+                iconDiv.className = 'icon-item';
+                iconDiv.innerHTML = `
+                    <img src="${dataUrl}" alt="Icon ${size}x${size}">
+                    <p>${size}x${size}</p>
+                    <a href="${dataUrl}" download="icon-${size}.png">📥 Descargar</a>
+                `;
+
+                container.appendChild(iconDiv);
+            });
+
+            alert('✅ ¡Iconos generados! Descarga cada uno haciendo clic en los enlaces.');
+        }
+
+        // Generar automáticamente al cargar
+        window.addEventListener('load', () => {
+            setTimeout(generateAllIcons, 500);
+        });
+    </script>
+</body>
+</html>
